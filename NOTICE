@@ -1,0 +1,70 @@
+HomeServer V2
+Copyright 2026 Aswin A
+
+This product includes software developed by Aswin A.
+
+Licensed under the Apache License, Version 2.0.
+
+========================================================================
+Third-Party Dependencies and Licenses
+========================================================================
+
+This project uses the following third-party software at runtime via
+Docker containers. These are NOT bundled in the source distribution;
+they are downloaded at build/install time by their respective package
+managers (pip, npm) or pulled as Docker images.
+
+--- Backend (Python) ---
+
+FastAPI               - MIT License        - https://github.com/tiangolo/fastapi
+Uvicorn               - BSD 3-Clause       - https://github.com/encode/uvicorn
+SQLAlchemy            - MIT License        - https://github.com/sqlalchemy/sqlalchemy
+psycopg               - LGPL 3.0           - https://github.com/psycopg/psycopg
+Alembic               - MIT License        - https://github.com/sqlalchemy/alembic
+pydantic-settings     - MIT License        - https://github.com/pydantic/pydantic-settings
+email-validator       - CC0 1.0            - https://github.com/JoshData/python-email-validator
+argon2-cffi           - MIT License        - https://github.com/hynek/argon2-cffi
+python-multipart      - Apache 2.0         - https://github.com/andrew-d/python-multipart
+resend                - MIT License        - https://github.com/resend/resend-python
+
+--- Frontend (Node.js) ---
+
+React                 - MIT License        - https://github.com/facebook/react
+React DOM             - MIT License        - https://github.com/facebook/react
+React Router DOM      - MIT License        - https://github.com/remix-run/react-router
+Vite                  - MIT License        - https://github.com/vitejs/vite
+TypeScript            - Apache 2.0         - https://github.com/microsoft/TypeScript
+TailwindCSS           - MIT License        - https://github.com/tailwindlabs/tailwindcss
+Lucide React          - ISC License        - https://github.com/lucide-icons/lucide
+qrcode                - MIT License        - https://github.com/soldair/node-qrcode
+PostCSS               - MIT License        - https://github.com/postcss/postcss
+Autoprefixer          - MIT License        - https://github.com/postcss/autoprefixer
+
+--- Docker Base Images ---
+
+python:3.12-slim      - PSF License / GPL  - https://hub.docker.com/_/python
+node:22-alpine        - MIT License        - https://hub.docker.com/_/node
+nginx:1.27-alpine     - BSD 2-Clause       - https://hub.docker.com/_/nginx
+postgres:17.5-alpine  - PostgreSQL License - https://hub.docker.com/_/postgres
+axllent/mailpit       - MIT License        - https://github.com/axllent/mailpit
+
+--- Development / Testing ---
+
+pytest                - MIT License        - https://github.com/pytest-dev/pytest
+httpx                 - BSD 3-Clause       - https://github.com/encode/httpx
+Vitest                - MIT License        - https://github.com/vitest-dev/vitest
+Testing Library       - MIT License        - https://github.com/testing-library
+jsdom                 - MIT License        - https://github.com/jsdom/jsdom
+
+========================================================================
+Notes
+========================================================================
+
+- psycopg is licensed under LGPL 3.0. It is used as a standard pip
+  dependency and is not modified or statically linked. The LGPL permits
+  this usage pattern.
+- Docker base images are pulled at build time and are subject to their
+  own respective licenses as noted above.
+- No third-party fonts, icons, images, or other binary assets are
+  bundled in this source distribution beyond what is installed by npm
+  and pip at build time.

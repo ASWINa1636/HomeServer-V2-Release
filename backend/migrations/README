@@ -1,0 +1,1 @@
+Migration history is append-only. Run `alembic upgrade head` on startup; never reset or drop a production database.

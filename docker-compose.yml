@@ -1,0 +1,113 @@
+# HomeServer V2 — Production Docker Compose
+# Copyright 2026 Aswin A — Licensed under Apache 2.0
+#
+# Usage: docker compose up -d --build
+# Docs:  See README.md for full installation instructions.
+
+name: homeserver-v2
+
+services:
+  homeserver-v2-db:
+    image: postgres:17.5-alpine
+    container_name: homeserver-v2-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-homeserver_v2}
+      POSTGRES_USER: ${POSTGRES_USER:-homeserver_v2}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - homeserver_v2_db_data:/var/lib/postgresql/data
+    networks: [homeserver-v2-net]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 15s
+    security_opt: [no-new-privileges:true]
+
+  homeserver-v2-backend:
+    build:
+      context: ./backend
+      args:
+        APP_UID: ${APP_UID:-1000}
+        APP_GID: ${APP_GID:-1000}
+    container_name: homeserver-v2-backend
+    restart: unless-stopped
+    init: true
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-homeserver_v2}:${POSTGRES_PASSWORD}@homeserver-v2-db:5432/${POSTGRES_DB:-homeserver_v2}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      COOKIE_SAMESITE: ${COOKIE_SAMESITE:-lax}
+      SESSION_DAYS: ${SESSION_DAYS:-14}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8081}
+      EMAIL_PROVIDER: ${EMAIL_PROVIDER:-smtp}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      SMTP_HOST: ${SMTP_HOST:-homeserver-v2-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-HomeServer V2 <noreply@example.test>}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+      OTP_MINUTES: ${OTP_MINUTES:-5}
+      OTP_RESEND_SECONDS: ${OTP_RESEND_SECONDS:-60}
+      OTP_MAX_ATTEMPTS: ${OTP_MAX_ATTEMPTS:-5}
+      REGISTRATION_POLICY: ${REGISTRATION_POLICY:-open}
+      STORAGE_ROOT: /data
+      MAX_UPLOAD_BYTES: ${MAX_UPLOAD_BYTES:-104857600}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost,127.0.0.1,frontend}
+    volumes:
+      - ${HOST_DATA_PATH:-./data}:/data
+    depends_on:
+      homeserver-v2-db:
+        condition: service_healthy
+    networks: [homeserver-v2-net]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    security_opt: [no-new-privileges:true]
+
+  homeserver-v2-frontend:
+    build: ./frontend
+    container_name: homeserver-v2-frontend
+    restart: unless-stopped
+    depends_on:
+      homeserver-v2-backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_PORT:-8081}:8080"
+    networks: [homeserver-v2-net]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"]
+      interval: 20s
+      timeout: 4s
+      retries: 5
+    security_opt: [no-new-privileges:true]
+
+  homeserver-v2-mailpit:
+    image: axllent/mailpit:v1.27.8
+    container_name: homeserver-v2-mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+    networks: [homeserver-v2-net]
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 15s
+      timeout: 4s
+      retries: 5
+    security_opt: [no-new-privileges:true]
+
+networks:
+  homeserver-v2-net:
+    name: homeserver-v2-net
+    driver: bridge
+
+volumes:
+  homeserver_v2_db_data:
+    name: homeserver-v2-db-data

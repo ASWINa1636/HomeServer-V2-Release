@@ -1,0 +1,35 @@
+# Secrets and environment
+.env
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+test_homeserver_v2.db
+
+# Node.js
+frontend/node_modules/
+frontend/dist/
+
+# User data (created at runtime)
+data/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker override (generated at runtime)
+docker-compose.override.yml
+
+# Logs and runtime files
+*.log
+*.pid
