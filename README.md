@@ -29,7 +29,7 @@
 
 ### 1. Download
 
-Download the latest release ZIP from the [Releases page](https://github.com/your-username/HomeServer-V2-Release/releases) and extract it.
+Download the latest release ZIP from the [Releases page](https://github.com/ASWINa1636/HomeServer-V2-Release/releases/download/v2.0.0/HomeServer-V2-Release-v2.0.0.zip) and extract it.
 
 ### 2. Configure
 
